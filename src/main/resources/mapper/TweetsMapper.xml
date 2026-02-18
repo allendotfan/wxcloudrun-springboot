@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tencent.wxcloudrun.dao.TweetsMapper">
+
+    <resultMap id="tweetsMapper" type="com.tencent.wxcloudrun.model.Tweet">
+        <id property="id" column="id"/>
+        <result property="content" column="content"/>
+        <result property="author" column="author"/>
+        <result property="status" column="status"/>
+        <result property="likeCount" column="likeCount"/>
+        <result property="commentCount" column="commentCount"/>
+        <result property="createdAt" column="createdAt" javaType="java.time.LocalDateTime" />
+        <result property="updatedAt" column="updatedAt" javaType="java.time.LocalDateTime" />
+    </resultMap>
+
+    <insert id="insertTweet" parameterType="com.tencent.wxcloudrun.model.Tweet" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `Tweets`(`content`, `author`, `status`, `likeCount`, `commentCount`)
+        VALUES(#{content}, #{author}, #{status}, #{likeCount}, #{commentCount})
+    </insert>
+
+    <select id="queryTweets" resultMap="tweetsMapper">
+        SELECT `id`, `content`, `author`, `status`, `likeCount`, `commentCount`, `createdAt`, `updatedAt`
+        FROM Tweets
+        WHERE 1=1
+        <if test="author != null and author != ''">
+            AND `author` = #{author}
+        </if>
+        <if test="status != null">
+            AND `status` = #{status}
+        </if>
+        ORDER BY `createdAt` DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="countTweets" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM Tweets
+        WHERE 1=1
+        <if test="author != null and author != ''">
+            AND `author` = #{author}
+        </if>
+        <if test="status != null">
+            AND `status` = #{status}
+        </if>
+    </select>
+
+</mapper>
